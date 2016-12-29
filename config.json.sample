@@ -1,4 +1,5 @@
 {
+  "port"         : "8080"
   "fb_db_secret" : "andbsecret",
-  "fb_db_path" : "https://samples.firebaseio.com/"
+  "fb_db_path"   : "https://samples.firebaseio.com/"
 }
