@@ -74,12 +74,12 @@ func (s *storageClient) GetGuest(string) (model.Guest, error) {
 
 func (s *storageClient) GetGuestByCode(code string) (model.Guest, error) {
 	e := model.Guest{}
-	err := s.storage.Get("guests/"+code, &e)
+	err := s.storage.Get("events/guests/"+code, &e)
 	return e, err
 }
 
 func (s *storageClient) CreateGuest(g model.Guest, code string) error {
-	return s.storage.Write("guests/"+code, g)
+	return s.storage.Write("events/guests/"+code, g)
 }
 
 func (s *storageClient) UpdateGuest(g model.Guest) error {
