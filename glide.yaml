@@ -1,0 +1,3 @@
+package: tablebooking
+import:
+- package: github.com/ereminIvan/firebase

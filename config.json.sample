@@ -1,0 +1,4 @@
+{
+  "fb_db_secret" : "andbsecret",
+  "fb_db_path" : "https://samples.firebaseio.com/"
+}
