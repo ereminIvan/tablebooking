@@ -18,7 +18,7 @@ type GuestCreate struct {
 type GuestCreateRequest struct {
 	Name       string `json:"guest_name"`
 	LastName   string `json:"guest_last_name"`
-	IsVIP      bool   `json:"guest_is_vip"`
+	IsVIP      string `json:"guest_is_vip"`
 	EventTitle string `json:"event_title"`
 }
 
@@ -29,17 +29,17 @@ func (h *GuestCreate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		d := json.NewDecoder(r.Body)
 		err := d.Decode(gcr)
 		if err != nil {
-			log.Printf("Handler GuestCreate parsing request Error: %s", err.Error())
+			log.Printf("Handler GuestCreate parsing request Error: %s", err)
 		}
 		defer r.Body.Close()
-
-		if gcr.Name != "" && gcr.LastName != "" && gcr.EventTitle != "" {
+		log.Printf("%#v", gcr)
+		if err := gcr.Validate(); err == nil {
 			err := h.Source.CreateGuest(
-				dto.Guest{IsVIP: gcr.IsVIP, FirstName: gcr.Name, LastName: gcr.LastName, Code: h.Random.Runes(7)},
+				dto.Guest{IsVIP: gcr.IsVIP == "true", FirstName: gcr.Name, LastName: gcr.LastName, Code: h.Random.Runes(7)},
 				dto.Event{Title: gcr.EventTitle},
 			)
 			if err != nil {
-				log.Printf("Handler GuestCreate failed with %s", err.Error())
+				log.Printf("Handler GuestCreate failed with %s", err)
 				w.WriteHeader(http.StatusBadRequest)
 			}
 		}
@@ -48,15 +48,26 @@ func (h *GuestCreate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		if err != nil {
 			log.Printf("Handler GuestCreate Error: %s", err.Error())
 		}
-		for t, e := range evs {
-			log.Printf("%v   :   %v", t, e)
-		}
 		tpl := template.Must(template.ParseFiles(
 			"./templates/basic.html",
 			"./templates/guest/create/content.html",
 		))
-		if err := tpl.ExecuteTemplate(w, "basic.html", nil); err != nil {
+		if err := tpl.ExecuteTemplate(w, "basic.html", evs); err != nil {
 			panic(err)
 		}
 	}
+}
+
+// Validate validate request
+func (r *GuestCreateRequest) Validate() error {
+	if r.Name != "" {
+		return Error{Value: "Не правильное имя гостя"}
+	}
+	if r.LastName != "" {
+		return Error{Value: "Не правильная фамилия гостя"}
+	}
+	if r.EventTitle != "" {
+		return Error{Value: "Событие не задано"}
+	}
+	return nil
 }

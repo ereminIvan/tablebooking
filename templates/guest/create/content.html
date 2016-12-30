@@ -19,16 +19,16 @@
                             <small id="guest_last_name_help" class="form-text text-muted">Пожалуйста введите правильную Фамилию гостя</small>
                         </div>
                         <div class="form-group">
-                            <label for="event">Мероприятие</label>
-                            <select name="event" class="form-control" id="event" aria-describedby="event_help">
-                                {{range .events}}
+                            <label for="event_title">Мероприятие</label>
+                            <select name="event_title" class="form-control" id="event_title" aria-describedby="event_title_help">
+                                {{range .}}
                                     <option value="{{.Title}}">{{.Title}}</option>
                                 {{end}}
                             </select>
-                            <small id="event_help" class="form-text text-muted">Выберете мероприятие на которое в которое добавляете гостя</small>
+                            <small id="event_title_help" class="form-text text-muted">Выберете мероприятие на которое в которое добавляете гостя</small>
                         </div>
                         <div class="checkbox">
-                            <label for="guest_is_vip"><input type="checkbox" value="" id="guest_is_vip"
+                            <label for="guest_is_vip"><input type="checkbox" name="guest_is_vip" value="" id="guest_is_vip"
                                                              aria-describedby="guest_is_vip_help">VIP гость</label>
                         </div>
                         <button type="submit" class="btn btn-primary">Сохранить</button>

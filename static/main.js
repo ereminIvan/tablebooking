@@ -19,6 +19,12 @@ var Event = {
 };
 
 var Guest = {
+    _init: function() {
+        console.log("Init Guest");
+        $('form').submit(function (evt) {
+            evt.preventDefault();
+        });
+    },
     Code : function(code) {
         console.log(code)
     },
@@ -40,17 +46,22 @@ var Guest = {
      * @return {boolean}
      */
     HandleCreate : function (form) {
-        $.post("/guest/create", {
-            "first_name": form.val("first_name"),
-            "last_name":  form.val("last_name"),
-            "is_vip":     form.val("is_vip")
-        }, function(data, status) {
-            console.log(data, status);
-            if (status == 200) {
-                $("body").html(data);
-            } else {
-                $("body").append(status)
+        //Collect form data in json
+        var f = form.serializeArray();
+        d = {};
+        for (var i = 0; i < f.length; i++) {
+            if (f[1].name == "is_vip") {
+                d[f[i].name] = true;
+                continue;
             }
+            d[f[i].name] = f[i].value;
+        }
+        //Do request
+        $.ajax({
+            data : JSON.stringify(d),
+            contentType : 'application/json',
+            type: "POST",
+            url: "/guest/create"
         });
         return false;
     }

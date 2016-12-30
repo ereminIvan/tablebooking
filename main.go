@@ -32,6 +32,7 @@ func init() {
 		{Path: "/guest/create", Handler: &handler.GuestCreate{Source: dbStorage, Random: random}},
 		{Path: "/event/edit/(.*)", Handler: &handler.GuestEdit{Source: dbStorage}},
 		{Path: "/event/delete/(.*)", Handler: &handler.GuestDelete{Source: dbStorage}},
+		{Path: "/static/", Handler: http.FileServer(http.Dir("./"))},
 	}.Prepare()
 }
 
