@@ -37,6 +37,7 @@ func (h *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	path := r.URL.Path
 	for h, rx := range h.RouteList {
 		if rx.MatchString(path) {
+			log.Printf("Serve route path: %s", path)
 			h.ServeHTTP(w, r)
 			return
 		}

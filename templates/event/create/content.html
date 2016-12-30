@@ -2,14 +2,26 @@
     <h3>Создание события</h3>
     <div class="row">
         <div class="col-md-12">
-            <form onsubmit="return Event.HandlerCreate($(this))">
-                <div class="form-group">
-                    <label for="event_title">Название эвента</label>
-                    <input name="event_title" type="text" class="form-control" id="event_title" aria-describedby="event_title_help" placeholder="Введите название эвента">
-                    <small id="event_title_help" class="form-text text-muted"></small>
+            <div class="panel panel-primary">
+                <div class="panel-heading">Создание нового события</div>
+                <div class="panel-body">
+                    <form onsubmit="return Event.HandleCreate($(this))">
+                        <div class="form-group">
+                            <label for="event_title">Название события</label>
+                            <input name="event_title" type="text" class="form-control" id="event_title"
+                                   aria-describedby="event_title_help" placeholder="Введите название события">
+                            <small id="event_title_help" class="form-text text-muted"></small>
+                        </div>
+                        <div class="form-group">
+                            <label for="event_date_start">Дата начала события</label>
+                            <input name="event_date_start" type="date" class="form-control" id="event_date_start"
+                                   aria-describedby="event_title_help">
+                            <small id="event_date_start_help" class="form-text text-muted"></small>
+                        </div>
+                        <button type="submit" class="btn btn-primary">Продолжить</button>
+                    </form>
                 </div>
-                <button type="button" class="btn btn-primary">Продолжить</button>
-            </form>
+            </div>
         </div>
     </div>
 </div>

@@ -8,11 +8,19 @@ var Event = {
     /**
      * @return {boolean}
      */
-    HandlerCreate: function(form) {
-        $.post("/event/create", {
-            "event_title": form.val("event_title")
-        }, function(data, status) {
-            console.log(data, status);
+    HandleCreate: function(form) {
+        //Collect form data in json
+        var f = form.serializeArray();
+        var d = {};
+        for (var i = 0; i < f.length; i++) {
+            d[f[i].name] = f[i].value;
+        }
+        //Do request
+        $.ajax({
+            data : JSON.stringify(d),
+            contentType : 'application/json',
+            type: "POST",
+            url: "/event/create"
         });
         return false;
     }
@@ -48,7 +56,7 @@ var Guest = {
     HandleCreate : function (form) {
         //Collect form data in json
         var f = form.serializeArray();
-        d = {};
+        var d = {};
         for (var i = 0; i < f.length; i++) {
             if (f[1].name == "is_vip") {
                 d[f[i].name] = true;
@@ -63,6 +71,22 @@ var Guest = {
             type: "POST",
             url: "/guest/create"
         });
+        return false;
+    },
+    /**
+     * @return {boolean}
+     */
+    HandleDelete : function (guestCode, eventTitle) {
+        var d = {
+            "guest_code" : guestCode,
+            "event_title" : eventTitle
+        };
+        $.ajax({
+            data : JSON.stringify(d),
+            contentType : 'application/json',
+            type: "POST",
+            url: "/guest/delete"
+        })
         return false;
     }
 };

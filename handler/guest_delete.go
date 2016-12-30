@@ -1,9 +1,9 @@
 package handler
 
 import (
+	"encoding/json"
 	"log"
 	"net/http"
-	"strings"
 
 	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
@@ -13,20 +13,24 @@ type GuestDelete struct {
 	Source service.ISource
 }
 
+type GuestDeleteRequest struct {
+	EventTitle string `json:"event_title"`
+	GuestCode  string `json:"guest_code"`
+}
+
 func (h *GuestDelete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
-	var eTitle string
-	var gCode string
+	//Parse Request
+	gdr := GuestDeleteRequest{}
+	d := json.NewDecoder(r.Body)
+	err := d.Decode(gdr)
+	if err != nil {
+		log.Printf("Handler GuestDelete parsing request Error: %s", err)
+	}
+	defer r.Body.Close()
 
-	t := strings.Split(r.URL.Path, "/")
-
-	gCode = t[len(t)-1]
-	if strings.Trim(gCode, " ") == "" || strings.Trim(eTitle, " ") == "" {
-
-	} else {
-		e := dto.Event{Title: eTitle} //todo no idea how to do it currently
-		g := dto.Guest{Code: gCode}
-		if err := h.Source.DeleteGuest(g, e); err != nil {
-			log.Print(err)
-		}
+	if err := h.Source.DeleteGuest(dto.Guest{Code: gdr.GuestCode}, dto.Event{Title: gdr.EventTitle}); err != nil {
+		log.Print(err)
+		//todo return error struct
+		//todo set header
 	}
 }

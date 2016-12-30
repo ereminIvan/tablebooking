@@ -1,13 +1,13 @@
 package handler
 
 import (
+	"encoding/json"
 	"html/template"
 	"log"
 	"net/http"
 
 	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
-	"github.com/golang/go/src/pkg/encoding/json"
 )
 
 type GuestCreate struct {
@@ -23,51 +23,65 @@ type GuestCreateRequest struct {
 }
 
 func (h *GuestCreate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	//Create new
 	if r.Method == http.MethodPost {
-		//Parse Request
-		gcr := &GuestCreateRequest{}
-		d := json.NewDecoder(r.Body)
-		err := d.Decode(gcr)
-		if err != nil {
-			log.Printf("Handler GuestCreate parsing request Error: %s", err)
-		}
-		defer r.Body.Close()
-		log.Printf("%#v", gcr)
-		if err := gcr.Validate(); err == nil {
-			err := h.Source.CreateGuest(
-				dto.Guest{IsVIP: gcr.IsVIP == "true", FirstName: gcr.Name, LastName: gcr.LastName, Code: h.Random.Runes(7)},
-				dto.Event{Title: gcr.EventTitle},
-			)
-			if err != nil {
-				log.Printf("Handler GuestCreate failed with %s", err)
-				w.WriteHeader(http.StatusBadRequest)
-			}
-		}
+		h.post(w, r)
+		//Open creation form
 	} else {
-		evs, err := h.Source.GetEvents()
-		if err != nil {
-			log.Printf("Handler GuestCreate Error: %s", err.Error())
-		}
-		tpl := template.Must(template.ParseFiles(
-			"./templates/basic.html",
-			"./templates/guest/create/content.html",
-		))
-		if err := tpl.ExecuteTemplate(w, "basic.html", evs); err != nil {
-			panic(err)
-		}
+		h.get(w, r)
+	}
+}
+
+func (h *GuestCreate) post(w http.ResponseWriter, r *http.Request) {
+	//Parse Request
+	gcr := &GuestCreateRequest{}
+	d := json.NewDecoder(r.Body)
+	err := d.Decode(gcr)
+	if err != nil {
+		log.Printf("Handler GuestCreate parsing request Error: %s", err)
+	}
+	defer r.Body.Close()
+
+	log.Printf("%#v", gcr)
+	if err := gcr.Validate(); err != nil {
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+	err = h.Source.CreateGuest(
+		dto.Guest{IsVIP: gcr.IsVIP == "true", FirstName: gcr.Name, LastName: gcr.LastName, Code: h.Random.Runes(7)},
+		dto.Event{Title: gcr.EventTitle},
+	)
+	if err != nil {
+		log.Printf("Handler GuestCreate failed with %s", err)
+		w.WriteHeader(http.StatusBadRequest)
+		return
+	}
+}
+
+func (h *GuestCreate) get(w http.ResponseWriter, r *http.Request) {
+	evs, err := h.Source.GetEvents()
+	if err != nil {
+		log.Printf("Handler GuestCreate Error: %s", err.Error())
+	}
+	tpl := template.Must(template.ParseFiles(
+		"./templates/basic.html",
+		"./templates/guest/create/content.html",
+	))
+	if err := tpl.ExecuteTemplate(w, "basic.html", evs); err != nil {
+		panic(err)
 	}
 }
 
 // Validate validate request
 func (r *GuestCreateRequest) Validate() error {
-	if r.Name != "" {
-		return Error{Value: "Не правильное имя гостя"}
+	if r.Name == "" {
+		return errInvalidGuestName
 	}
-	if r.LastName != "" {
-		return Error{Value: "Не правильная фамилия гостя"}
+	if r.LastName == "" {
+		return errInvalidGuestLastName
 	}
-	if r.EventTitle != "" {
-		return Error{Value: "Событие не задано"}
+	if r.EventTitle == "" {
+		return errInvalidEventTitle
 	}
 	return nil
 }
