@@ -4,7 +4,7 @@ import (
 	"html/template"
 	"net/http"
 
-	"github.com/ereminIvan/tablebooking/model"
+	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
 )
 
@@ -18,7 +18,7 @@ func (h *EventList) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		panic(err)
 	}
 	data := struct {
-		Events model.Events
+		Events dto.Events
 	}{
 		Events: events,
 	}

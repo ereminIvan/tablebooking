@@ -19,8 +19,10 @@
                                 <td>{{ .Title }}</td>
                                 <td>{{ .StartDate.Format "2006 Jan 02" }}</td>
                                 <td>
-                                    <a type="button" class="btn btn-info btn-sm" onclick="return Event.Edit('{{.Title}}')" href="/event/{{ .Title }}/edit">Изменить</a>
-                                    <a type="button" class="btn btn-danger btn-sm" onclick="return Event.Delete('{{.Title}}')" href="/event/{{ .Title }}/delete">Удалить</a>
+                                    <a type="button" class="btn btn-info btn-sm" onclick="return Event.Edit('{{.Title}}')"
+                                       href="/event/{{ .Title }}/edit">Изменить</a>
+                                    <a type="button" class="btn btn-danger btn-sm" onclick="return Event.Delete('{{.Title}}')"
+                                       href="/event/{{ .Title }}/delete">Удалить</a>
                                 </td>
                             </tr>
                             {{end}}

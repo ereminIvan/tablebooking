@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"log"
 	"net/http"
 	"regexp"
 )
@@ -12,7 +13,7 @@ type Route struct {
 
 type RouteList []Route
 
-func (rl RouteList) Build() map[IHandler]*regexp.Regexp {
+func (rl RouteList) Prepare() map[IHandler]*regexp.Regexp {
 	list := make(map[IHandler]*regexp.Regexp, len(rl))
 	for _, r := range rl {
 		rx, err := regexp.Compile(r.Path)
@@ -40,4 +41,7 @@ func (h *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	w.WriteHeader(http.StatusNotFound)
+	w.Write([]byte("This is not the droid you're looking for"))
+	log.Printf("Route not found: %s", path)
 }

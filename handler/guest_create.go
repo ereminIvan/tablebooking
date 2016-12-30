@@ -5,8 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/ereminIvan/tablebooking/model"
+	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
+	"github.com/golang/go/src/pkg/encoding/json"
 )
 
 type GuestCreate struct {
@@ -14,25 +15,48 @@ type GuestCreate struct {
 	Random service.IRandom
 }
 
+type GuestCreateRequest struct {
+	Name       string `json:"guest_name"`
+	LastName   string `json:"guest_last_name"`
+	IsVIP      bool   `json:"guest_is_vip"`
+	EventTitle string `json:"event_title"`
+}
+
 func (h *GuestCreate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodPost {
+		//Parse Request
+		gcr := &GuestCreateRequest{}
+		d := json.NewDecoder(r.Body)
+		err := d.Decode(gcr)
+		if err != nil {
+			log.Printf("Handler GuestCreate parsing request Error: %s", err.Error())
+		}
+		defer r.Body.Close()
 
-	name := r.FormValue("guest_name")
-	lastname := r.FormValue("guest_lastname")
-	isVIP := r.FormValue("guest_is_vip")
-
-	if name == "" || lastname == "" {
-		tpl := template.Must(template.ParseFiles("./templates/basic.html", "./templates/guest/create/content.html"))
-		if err := tpl.ExecuteTemplate(w, "basic.html", nil); err != nil {
-			panic(err)
+		if gcr.Name != "" && gcr.LastName != "" && gcr.EventTitle != "" {
+			err := h.Source.CreateGuest(
+				dto.Guest{IsVIP: gcr.IsVIP, FirstName: gcr.Name, LastName: gcr.LastName, Code: h.Random.Runes(7)},
+				dto.Event{Title: gcr.EventTitle},
+			)
+			if err != nil {
+				log.Printf("Handler GuestCreate failed with %s", err.Error())
+				w.WriteHeader(http.StatusBadRequest)
+			}
 		}
 	} else {
-		err := h.Source.CreateGuest(
-			model.Guest{IsVIP: isVIP == "true", FirstName: name, LastName: lastname},
-			h.Random.Runes(7),
-		)
+		evs, err := h.Source.GetEvents()
 		if err != nil {
-			log.Printf("CreateGuest failed with %s", err.Error())
-			w.WriteHeader(http.StatusBadRequest)
+			log.Printf("Handler GuestCreate Error: %s", err.Error())
+		}
+		for t, e := range evs {
+			log.Printf("%v   :   %v", t, e)
+		}
+		tpl := template.Must(template.ParseFiles(
+			"./templates/basic.html",
+			"./templates/guest/create/content.html",
+		))
+		if err := tpl.ExecuteTemplate(w, "basic.html", nil); err != nil {
+			panic(err)
 		}
 	}
 }

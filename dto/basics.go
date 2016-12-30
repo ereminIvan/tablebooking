@@ -1,4 +1,4 @@
-package model
+package dto
 
 import "time"
 
@@ -6,11 +6,10 @@ type Guest struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
 	IsVIP     bool   `json:"is_vip"`
+	Code      string `json:"code"`
 }
 
-type Code string
-
-type Guests map[Code]Guest
+type Guests map[string]Guest
 
 type Table struct {
 	Guests Guests `json:"guests"`

@@ -2,13 +2,13 @@
     <h3>Создание события</h3>
     <div class="row">
         <div class="col-md-12">
-            <form action="/event/create" method="POST" onsubmit="return createEvent($(this))">
+            <form onsubmit="return Event.HandlerCreate($(this))">
                 <div class="form-group">
                     <label for="event_title">Название эвента</label>
                     <input name="event_title" type="text" class="form-control" id="event_title" aria-describedby="event_title_help" placeholder="Введите название эвента">
                     <small id="event_title_help" class="form-text text-muted"></small>
                 </div>
-                <button type="submit" class="btn btn-primary">Продолжить</button>
+                <button type="button" class="btn btn-primary">Продолжить</button>
             </form>
         </div>
     </div>

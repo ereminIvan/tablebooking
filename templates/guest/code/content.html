@@ -5,10 +5,11 @@
 			<div class="panel panel-primary">
 				<div class="panel-heading">Введите ваш код для продолжения бронирования</div>
 				<div class="panel-body">
-					<form action="/guest/code" method="POST" onsubmit="return checkCodeAction($(this));">
+					<form onsubmit="return Guest.HandleCode($(this));">
 						<div class="form-group">
 							<label for="guest_code">Гостевой код</label>
-							<input name="guest_code" type="text" class="form-control" id="guest_code" aria-describedby="guest_code_help" placeholder="Введите код">
+							<input name="guest_code" type="text" class="form-control" id="guest_code"
+								   aria-describedby="guest_code_help" placeholder="Введите код">
 							<small id="guest_code_help" class="form-text text-muted"></small>
 						</div>
 						<button type="submit" class="btn btn-primary">Продолжить</button>

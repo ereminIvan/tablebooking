@@ -1,9 +1,10 @@
 package service
 
 import (
-	"github.com/ereminIvan/tablebooking/model"
+	"github.com/ereminIvan/tablebooking/dto"
 )
 
+// IStorage interface for getting access to storage
 type IStorage interface {
 	Get(string, interface{}) error
 	Write(string, interface{}) error
@@ -12,84 +13,94 @@ type IStorage interface {
 	Delete(string) error
 }
 
+// ISource interface for getting access to data source
 type ISource interface {
 	//Events
-	GetEvent(string) (model.Event, error)
-	CreateEvent(model.Event) error
-	UpdateEvent(model.Event) error
-	DeleteEvent(model.Event) error
+	GetEvent(string) (dto.Event, error)
+	CreateEvent(dto.Event) error
+	UpdateEvent(dto.Event) error
+	DeleteEvent(dto.Event) error
 	DeleteEvents() error
-	GetEvents() (model.Events, error)
+	GetEvents() (dto.Events, error)
 	//Guests
-	GetGuest(string) (model.Guest, error)
-	CreateGuest(guest model.Guest, code string) error
-	UpdateGuest(model.Guest) error
-	DeleteGuest(model.Guest) error
-	GetGuests() ([]model.Guest, error)
-	GetGuestByCode(code string) (model.Guest, error)
+	CreateGuest(dto.Guest, dto.Event) error
+	UpdateGuest(dto.Guest, dto.Event) error
+	DeleteGuest(dto.Guest, dto.Event) error
+	GetGuests(dto.Event) ([]dto.Guest, error)
+	GetGuestByCode(string, dto.Event) (dto.Guest, error)
 }
 
 type storageClient struct {
 	storage IStorage
 }
 
+// NewStorage get new storage service
 func NewStorage(s IStorage) ISource {
 	return &storageClient{
 		storage: s,
 	}
 }
 
-func (s *storageClient) GetEvent(title string) (model.Event, error) {
-	e := model.Event{}
-	err := s.storage.Get("events/"+title, &e)
+// GetEvent Get event by title
+func (s *storageClient) GetEvent(t string) (dto.Event, error) {
+	e := dto.Event{}
+	err := s.storage.Get("events/"+t, &e)
 	return e, err
 }
 
 // CreateEvent Create single event with all attributes
-func (s *storageClient) CreateEvent(e model.Event) error {
+func (s *storageClient) CreateEvent(e dto.Event) error {
 	return s.storage.Write("events/"+e.Title, e)
 }
 
-func (s *storageClient) UpdateEvent(e model.Event) error {
+// UpdateEvent Update given event
+func (s *storageClient) UpdateEvent(e dto.Event) error {
 	return s.storage.Write("events/"+e.Title, e)
 }
 
+// DeleteEvent Delete specified event
+func (s *storageClient) DeleteEvent(e dto.Event) error {
+	return s.storage.Delete("events/" + e.Title)
+}
+
+// DeleteEvents Delete all events
 func (s *storageClient) DeleteEvents() error {
 	return s.storage.Delete("events")
 }
 
-func (s *storageClient) DeleteEvent(e model.Event) error {
-	return s.storage.Delete("events/" + e.Title)
-}
-
-func (s *storageClient) GetEvents() (model.Events, error) {
-	es := model.Events{}
+// GetEvents Get all events
+func (s *storageClient) GetEvents() (dto.Events, error) {
+	es := dto.Events{}
 	err := s.storage.Get("events", &es)
 	return es, err
 }
 
-func (s *storageClient) GetGuest(string) (model.Guest, error) {
-	return model.Guest{}, nil
+// GetGuestByCode Get guest by code and event
+func (s *storageClient) GetGuestByCode(code string, e dto.Event) (dto.Guest, error) {
+	g := dto.Guest{}
+	err := s.storage.Get("events/"+e.Title+"/guests/"+code, &g)
+	return g, err
 }
 
-func (s *storageClient) GetGuestByCode(code string) (model.Guest, error) {
-	e := model.Guest{}
-	err := s.storage.Get("events/guests/"+code, &e)
-	return e, err
+// CreateGuest Create guest in event
+func (s *storageClient) CreateGuest(g dto.Guest, e dto.Event) error {
+	return s.storage.Write("events/"+e.Title+"/guests/"+g.Code, g)
 }
 
-func (s *storageClient) CreateGuest(g model.Guest, code string) error {
-	return s.storage.Write("events/guests/"+code, g)
+// UpdateGuest update guest of given event
+func (s *storageClient) UpdateGuest(g dto.Guest, e dto.Event) error {
+	return s.storage.Update("events/"+e.Title+"/guests/"+g.Code, g)
 }
 
-func (s *storageClient) UpdateGuest(g model.Guest) error {
+// DeleteGuest delete guest of given event
+func (s *storageClient) DeleteGuest(g dto.Guest, e dto.Event) error {
+	s.storage.Delete("events/" + e.Title + "/guests/" + g.Code)
 	return nil
 }
 
-func (s *storageClient) DeleteGuest(g model.Guest) error {
-	return nil
-}
-
-func (s *storageClient) GetGuests() ([]model.Guest, error) {
-	return []model.Guest{}, nil
+// GetGuest get all guests of give event
+func (s *storageClient) GetGuests(e dto.Event) ([]dto.Guest, error) {
+	g := &[]dto.Guest{}
+	err := s.storage.Get("events/"+e.Title+"/guests", g)
+	return *g, err
 }
