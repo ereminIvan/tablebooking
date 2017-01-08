@@ -22,15 +22,19 @@ func init() {
 	if err := appConfig.Read("config.json"); err != nil {
 		panic(err)
 	}
-	dbStorage = service.NewStorage(fb.NewDBClient(appConfig.FbDBPath, appConfig.FbDBSecret, false, nil))
 	random = service.NewRand()
+
+	dbStorage = service.NewStorage(
+		fb.NewDBClient(appConfig.FbDBPath, appConfig.FbDBSecret, false, nil),
+		random,
+	)
 
 	routeList = handler.RouteList{
 		{Path: "/guest/code", Handler: &handler.GuestCode{Source: dbStorage}},
 		{Path: "/event/create", Handler: &handler.EventCreate{Source: dbStorage}},
 		{Path: "/event/list", Handler: &handler.EventList{Source: dbStorage}},
 		{Path: "/guest/create", Handler: &handler.GuestCreate{Source: dbStorage, Random: random}},
-		{Path: "/event/edit", Handler: &handler.EventEdit{Source: dbStorage}},
+		{Path: "/event/edit/", Handler: &handler.EventEdit{Source: dbStorage}},
 		{Path: "/event/delete", Handler: &handler.EventDelete{Source: dbStorage}},
 		{Path: "/static/", Handler: http.FileServer(http.Dir("./"))},
 	}.Prepare()
@@ -41,5 +45,7 @@ func main() {
 
 	log.Printf("Listen and serve with config: %#v", *appConfig)
 
-	http.ListenAndServe(":"+appConfig.Port, nil)
+	if err := http.ListenAndServe(":"+appConfig.Port, nil); err != nil {
+		panic(err)
+	}
 }

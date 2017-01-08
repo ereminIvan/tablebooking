@@ -12,9 +12,9 @@ type Guest struct {
 type Guests map[string]Guest
 
 type Table struct {
-	Guests Guests `json:"guests"`
-	IsVIP  bool   `json:"is_vip"`
-	Size   int64  `json:"size"`
+	Guests   Guests `json:"guests"`
+	IsVIP    bool   `json:"is_vip"`
+	Capacity int64  `json:"capacity"`
 }
 
 type Event struct {

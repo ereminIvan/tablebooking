@@ -1,13 +1,15 @@
-<h3>Создание мероприятия</h3>
+<h3>Изменение мероприятия</h3>
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-info">
-            <div class="panel-heading">Создание нового мероприятия</div>
+            <div class="panel-heading">Изменение мероприятия</div>
             <div class="panel-body">
-                <form onsubmit="return Event.HandleCreate($(this))">
+                <form onsubmit="return Event.HandleEdit($(this))">
+                    <input type="hidden" value="{{ .EventId }}" name="event_id">
                     <div class="form-group">
                         <label for="event_title">Название мероприятия</label>
                         <input name="event_title" type="text" class="form-control" id="event_title"
+                               value="{{ .Event.Title }}"
                                aria-describedby="event_title_help" placeholder="Введите название мероприятия">
                         <small id="event_title_help" class="form-text text-muted"></small>
                     </div>
@@ -15,6 +17,7 @@
                         <label for="event_date_start">Дата начала мероприятия</label>
                         <div class="input-group date datetimepicker-input">
                             <input name="event_date_start" type="text" class="form-control" id="event_date_start"
+                                   value='{{ .Event.StartDate.Format "02 Jan 06 15:04 MST" }}'
                                    aria-describedby="event_title_help"/>
                             <span class="input-group-addon">
                                 <span class="glyphicon glyphicon-calendar"></span>
@@ -24,6 +27,36 @@
                     </div>
                     <button type="submit" class="btn btn-primary">Продолжить</button>
                 </form>
+            </div>
+        </div>
+        <div class="panel panel-info">
+            <div class="panel-heading">Столы</div>
+            <div class="panel-body">
+                <div><a href="/event/create" class="btn btn-success pull-right">Добавить</a></div>
+                <table class="table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Вместимость</th>
+                        <th>Вип</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    {{ range $id, $table := .Event.Tables }}
+                    <tr>
+                        <td>{{ $id }}</td>
+                        <td>{{ $table.Capacity }}</td>
+                        <td>{{ $table.IsVip }}</td>
+                        <td>
+                            <a type="button" class="btn btn-info btn-sm" href="/event/edit/{{ $id }}/table/">Изменить</a>
+                            <a type="button" class="btn btn-danger btn-sm" data-title="{{ $id }}"
+                               onclick="return Event.HandleDeleteTable($(this))">Удалить</a>
+                        </td>
+                    </tr>
+                    {{end}}
+                    </tbody>
+                </table>
             </div>
         </div>
     </div>
@@ -39,8 +72,10 @@
                 <p>Событие было сохранено</p>
             </div>
             <div class="modal-footer">
-                <a type="button" class="btn btn-success btn-edit" href="/event/edit/">Продолжить редактирование</a>
-                <a type="button" class="btn btn-success btn-list" href="/event/list">Список мероприятий</a>
+                <a type="button" class="btn btn-success btn-edit"
+                        data-dismiss="modal" href="/event/edit/">Продолжить редактирование</a>
+                <a type="button" class="btn btn-success btn-list"
+                        data-dismiss="modal" href="/event/list">Список мероприятий</a>
                 <button type="button" class="btn btn-success btn-reset"
                         data-dismiss="modal">Создать еще одно</button>
             </div>

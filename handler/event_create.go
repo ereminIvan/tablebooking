@@ -10,6 +10,7 @@ import (
 
 	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
+	"github.com/golang/go/src/pkg/strings"
 )
 
 type EventCreate struct {
@@ -52,28 +53,20 @@ func (h *EventCreate) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	//Check same titled events
-	events, err := h.Source.GetEvents()
-	if err != nil {
-		invokeResponceErrorWithStatus(w, err, http.StatusBadRequest)
-		return
-	}
-	for _, e := range events {
-		if e.Title == ecr.Title {
-			invokeResponceErrorWithStatus(w, errDuplicateEventTitle, http.StatusBadRequest)
-			return
-		}
-	}
 	startDate, err := time.Parse(time.RFC822, ecr.StartDate)
 	if err != nil {
 		invokeResponceErrorWithStatus(w, err, http.StatusBadRequest)
 		return
 	}
-	err = h.Source.CreateEvent(dto.Event{Title: ecr.Title, StartDate: startDate})
+	err, id := h.Source.CreateEvent(dto.Event{Title: ecr.Title, StartDate: startDate})
 	if err != nil {
 		invokeResponceErrorWithStatus(w, err, http.StatusBadRequest)
 		return
 	}
+
+	rsp := Responce{Message: id}
+	rd, _ := json.Marshal(rsp)
+	w.Write(rd)
 }
 
 func (h *EventCreate) get(w http.ResponseWriter, r *http.Request) {
@@ -84,7 +77,7 @@ func (h *EventCreate) get(w http.ResponseWriter, r *http.Request) {
 }
 
 func (r *EventCreateRequest) Validate() error {
-	if r.Title == "" {
+	if strings.Trim(r.Title, " ") == "" {
 		return errInvalidEventTitle
 	}
 	return nil

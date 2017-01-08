@@ -13,7 +13,6 @@ var Main = {
 
 var Event = {
     _init: function() {
-        console.info("Init Events");
         $('form').submit(function (e) {
             e.preventDefault();
         });
@@ -49,6 +48,9 @@ var Event = {
         });
         return false;
     },
+    HandleEdit: function(form) {
+        
+    },
     handleCreateInited : false,
     HandleCreateInit : function() {
         if (Event.handleCreateInited) {
@@ -79,7 +81,11 @@ var Event = {
             contentType : 'application/json',
             type        : "POST",
             url         : "/event/create",
-            success     : Dialog.Do,
+            success     : function (s,m,r) {
+                Dialog.Do(s,m,r, function($dg, data) {
+                    $dg.find(".btn-edit").attr("href", "/event/edit/" + data)
+                });
+            },
             error       : Alert.Do
         });
         return false;
@@ -88,7 +94,6 @@ var Event = {
 
 var Guest = {
     _init: function() {
-        console.info("Init Events");
         $('form').submit(function (evt) {
             evt.preventDefault();
         });
@@ -194,8 +199,13 @@ var Alert = {
 };
 
 var Dialog = {
-    Do: function (a, s, r) {
-        $("#dialog").modal();
+    Do: function (a, s, r, fn) {
+        var d = JSON.parse(r.responseText);
+        var dg = $("#dialog");
+        if (typeof fn == "function") {
+            fn(dg, d["Message"]);
+        }
+        dg.modal();
     }
 };
 

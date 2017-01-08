@@ -16,8 +16,8 @@ type IStorage interface {
 // ISource interface for getting access to data source
 type ISource interface {
 	//Events
-	GetEvent(string) (dto.Event, error)
-	CreateEvent(dto.Event) error
+	GetEvent(id string) (dto.Event, error)
+	CreateEvent(dto.Event) (error, string)
 	UpdateEvent(dto.Event) error
 	DeleteEvent(dto.Event) error
 	DeleteEvents() error
@@ -31,26 +31,29 @@ type ISource interface {
 }
 
 type storageClient struct {
-	storage IStorage
+	storage     IStorage
+	randService IRandom
 }
 
 // NewStorage get new storage service
-func NewStorage(s IStorage) ISource {
+func NewStorage(s IStorage, r IRandom) ISource {
 	return &storageClient{
-		storage: s,
+		storage:     s,
+		randService: r,
 	}
 }
 
 // GetEvent Get event by title
-func (s *storageClient) GetEvent(t string) (dto.Event, error) {
+func (s *storageClient) GetEvent(id string) (dto.Event, error) {
 	e := dto.Event{}
-	err := s.storage.Get("events/"+t, &e)
+	err := s.storage.Get("events/"+id, &e)
 	return e, err
 }
 
 // CreateEvent Create single event with all attributes
-func (s *storageClient) CreateEvent(e dto.Event) error {
-	return s.storage.Write("events/"+e.Title, e)
+func (s *storageClient) CreateEvent(e dto.Event) (error, string) {
+	id := s.randService.Runes(15)
+	return s.storage.Write("events/"+id, e), id
 }
 
 // UpdateEvent Update given event

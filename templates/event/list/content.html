@@ -8,20 +8,21 @@
                 <table class="table">
                     <thead>
                     <tr>
+                        <th>#</th>
                         <th>Название мероприятия</th>
                         <th>Дата начала</th>
                         <th>Действия</th>
                     </tr>
                     </thead>
                     <tbody>
-                    {{ range .Events }}
+                    {{ range $id, $event := .Events }}
                     <tr>
-                        <td>{{ .Title }}</td>
-                        <td>{{ .StartDate.Format "2006 Jan 02" }}</td>
+                        <td>{{ $id }}</td>
+                        <td>{{ $event.Title }}</td>
+                        <td>{{ $event.StartDate.Format "2006 Jan 02" }}</td>
                         <td>
-                            <a type="button" class="btn btn-info btn-sm" data-title="{{.Title}}"
-                               onclick="return Event.Edit('{{.Title}}')">Изменить</a>
-                            <a type="button" class="btn btn-danger btn-sm" data-title="{{.Title}}"
+                            <a type="button" class="btn btn-info btn-sm" href="/event/edit/{{ $id }}">Изменить</a>
+                            <a type="button" class="btn btn-danger btn-sm" data-title="{{ $id }}"
                                onclick="return Event.HandleDelete($(this))">Удалить</a>
                         </td>
                     </tr>
