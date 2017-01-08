@@ -1,16 +1,25 @@
 package handler
 
-type Error struct {
-	Code  int
-	Value string
-}
-
-func (e Error) Error() string {
-	return e.Value
-}
+import (
+	"encoding/json"
+	"errors"
+	"net/http"
+)
 
 var (
-	errInvalidGuestName     = Error{Value: "Invalid guest name"}
-	errInvalidGuestLastName = Error{Value: "Invalid guest last name"}
-	errInvalidEventTitle    = Error{Value: "Invalid event title"}
+	//Guest errors
+	errInvalidGuestName     = errors.New("Invalid guest name")
+	errInvalidGuestLastName = errors.New("Invalid guest last name")
+
+	//Event errors
+	errInvalidEventTitle   = errors.New("Invalid event title")
+	errDuplicateEventTitle = errors.New("Event with this name already exist")
 )
+
+// write json responce with error and status code
+func invokeResponceErrorWithStatus(w http.ResponseWriter, err error, status int) {
+	w.WriteHeader(status)
+	rsp := Responce{Error: err.Error()}
+	d, _ := json.Marshal(rsp)
+	w.Write(d)
+}

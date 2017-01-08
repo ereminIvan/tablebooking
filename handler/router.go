@@ -42,6 +42,10 @@ func (h *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 	}
+	h.invokeNotFound(w, path)
+}
+
+func (h *Router) invokeNotFound(w http.ResponseWriter, path string) {
 	w.WriteHeader(http.StatusNotFound)
 	w.Write([]byte("This is not the droid you're looking for"))
 	log.Printf("Route not found: %s", path)

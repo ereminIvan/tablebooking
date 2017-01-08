@@ -4,15 +4,25 @@
         <title>Бронирование мест</title>
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
-        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <link rel="icon" type="image/x-icon" href="https://assets-cdn.github.com/favicon.ico">
+        <!-- Bootstrap -->
         <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css">
+        <!-- JQuery -->
         <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+        <!-- Datetimepicker -->
+        <script src="/static/js/bootstrap-datetimepicker.min.js"></script>
+        <link rel="stylesheet" href="/static/css/bootstrap-datetimepicker.min.css">
         <script src="/static/main.js"></script>
         <script>
             $(document).ready(function(){
-                Guest._init();
+                Main._init();
             });
         </script>
     </head>
-    <body>{{ template "content.html" .}}</body>
+    <body>
+        <div class="container">
+            {{ template "content.html" .}}
+        </div>
+    </body>
 </html>

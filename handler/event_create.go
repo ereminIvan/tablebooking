@@ -2,8 +2,9 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
+	"fmt"
 	"html/template"
-	"log"
 	"net/http"
 	"time"
 
@@ -16,8 +17,13 @@ type EventCreate struct {
 }
 
 type EventCreateRequest struct {
-	Title     string    `json:"event_title"`
-	StartDate time.Time `json:"event_date_start"`
+	Title     string `json:"event_title"`
+	StartDate string `json:"event_date_start"`
+}
+
+type Responce struct {
+	Error   string
+	Message string
 }
 
 func (h *EventCreate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -34,27 +40,40 @@ func (h *EventCreate) post(w http.ResponseWriter, r *http.Request) {
 	d := json.NewDecoder(r.Body)
 	err := d.Decode(ecr)
 	if err != nil {
-		log.Printf("Handler EventCreate parsing request Error: %s", err)
+		invokeResponceErrorWithStatus(w,
+			errors.New(fmt.Sprintf("Handler EventCreate parsing request Error: %s", err)), http.StatusBadRequest)
+		return
 	}
 	defer r.Body.Close()
 
-	log.Printf("%#v", ecr)
+	//Validate
 	if err := ecr.Validate(); err != nil {
-		w.WriteHeader(http.StatusBadRequest)
+		invokeResponceErrorWithStatus(w, err, http.StatusBadRequest)
 		return
 	}
+
+	//Check same titled events
 	events, err := h.Source.GetEvents()
+	if err != nil {
+		invokeResponceErrorWithStatus(w, err, http.StatusBadRequest)
+		return
+	}
 	for _, e := range events {
 		if e.Title == ecr.Title {
-			log.Printf("Error: Event with this name already exist")
+			invokeResponceErrorWithStatus(w, errDuplicateEventTitle, http.StatusBadRequest)
 			return
 		}
 	}
+	startDate, err := time.Parse(time.RFC822, ecr.StartDate)
 	if err != nil {
-		log.Printf("Error: %s", err.Error())
+		invokeResponceErrorWithStatus(w, err, http.StatusBadRequest)
 		return
 	}
-	h.Source.CreateEvent(dto.Event{Title: ecr.Title, StartDate: ecr.StartDate})
+	err = h.Source.CreateEvent(dto.Event{Title: ecr.Title, StartDate: startDate})
+	if err != nil {
+		invokeResponceErrorWithStatus(w, err, http.StatusBadRequest)
+		return
+	}
 }
 
 func (h *EventCreate) get(w http.ResponseWriter, r *http.Request) {
@@ -66,7 +85,7 @@ func (h *EventCreate) get(w http.ResponseWriter, r *http.Request) {
 
 func (r *EventCreateRequest) Validate() error {
 	if r.Title == "" {
-		return Error{Value: "Incorrect event title"}
+		return errInvalidEventTitle
 	}
 	return nil
 }

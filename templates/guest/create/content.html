@@ -1,39 +1,37 @@
-<div class="container">
-    <h3>Добавление нового гостя</h3>
-    <div class="row">
-        <div class="col-md-12">
-            <div class="panel panel-primary">
-                <div class="panel-heading">Добавление нового гостя на мероприятие</div>
-                <div class="panel-body">
-                    <form action="/guest/create" method="POST" onsubmit="return Guest.HandleCreate($(this));">
-                        <div class="form-group">
-                            <label for="guest_name">Имя гостя</label>
-                            <input name="guest_name" type="text" class="form-control" id="guest_name"
-                                   aria-describedby="guest_name_help" placeholder="Введите Имя гостя">
-                            <small id="guest_name_help" class="form-text text-muted">Пожалуйста введите правильное Имя гостя</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="guest_last_name">Фамилия гостя</label>
-                            <input name="guest_last_name" type="text" class="form-control" id="guest_last_name"
-                                   aria-describedby="guest_last_name_help" placeholder="Введите Фамилию гостя">
-                            <small id="guest_last_name_help" class="form-text text-muted">Пожалуйста введите правильную Фамилию гостя</small>
-                        </div>
-                        <div class="form-group">
-                            <label for="event_title">Мероприятие</label>
-                            <select name="event_title" class="form-control" id="event_title" aria-describedby="event_title_help">
-                                {{range .}}
-                                    <option value="{{.Title}}">{{.Title}}</option>
-                                {{end}}
-                            </select>
-                            <small id="event_title_help" class="form-text text-muted">Выберете мероприятие на которое в которое добавляете гостя</small>
-                        </div>
-                        <div class="checkbox">
-                            <label for="guest_is_vip"><input type="checkbox" name="guest_is_vip" value="" id="guest_is_vip"
-                                                             aria-describedby="guest_is_vip_help">VIP гость</label>
-                        </div>
-                        <button type="submit" class="btn btn-primary">Сохранить</button>
-                    </form>
-                </div>
+<h3>Добавление нового гостя</h3>
+<div class="row">
+    <div class="col-md-12">
+        <div class="panel panel-info">
+            <div class="panel-heading">Добавление нового гостя на мероприятие</div>
+            <div class="panel-body">
+                <form action="/guest/create" method="POST" onsubmit="return Guest.HandleCreate($(this));">
+                    <div class="form-group">
+                        <label for="guest_name">Имя гостя</label>
+                        <input name="guest_name" type="text" class="form-control" id="guest_name"
+                               aria-describedby="guest_name_help" placeholder="Введите Имя гостя">
+                        <small id="guest_name_help" class="form-text text-muted">Пожалуйста введите правильное Имя гостя</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="guest_last_name">Фамилия гостя</label>
+                        <input name="guest_last_name" type="text" class="form-control" id="guest_last_name"
+                               aria-describedby="guest_last_name_help" placeholder="Введите Фамилию гостя">
+                        <small id="guest_last_name_help" class="form-text text-muted">Пожалуйста введите правильную Фамилию гостя</small>
+                    </div>
+                    <div class="form-group">
+                        <label for="event_title">Мероприятие</label>
+                        <select name="event_title" class="form-control" id="event_title" aria-describedby="event_title_help">
+                            {{range .}}
+                            <option value="{{.Title}}">{{.Title}}</option>
+                            {{end}}
+                        </select>
+                        <small id="event_title_help" class="form-text text-muted">Выберете мероприятие на которое в которое добавляете гостя</small>
+                    </div>
+                    <div class="checkbox">
+                        <label for="guest_is_vip"><input type="checkbox" name="guest_is_vip" value="" id="guest_is_vip"
+                                                         aria-describedby="guest_is_vip_help">VIP гость</label>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Сохранить</button>
+                </form>
             </div>
         </div>
     </div>

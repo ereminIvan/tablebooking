@@ -20,7 +20,7 @@ type GuestDeleteRequest struct {
 
 func (h *GuestDelete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	//Parse Request
-	gdr := GuestDeleteRequest{}
+	gdr := &GuestDeleteRequest{}
 	d := json.NewDecoder(r.Body)
 	err := d.Decode(gdr)
 	if err != nil {

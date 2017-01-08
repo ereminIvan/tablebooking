@@ -30,8 +30,8 @@ func init() {
 		{Path: "/event/create", Handler: &handler.EventCreate{Source: dbStorage}},
 		{Path: "/event/list", Handler: &handler.EventList{Source: dbStorage}},
 		{Path: "/guest/create", Handler: &handler.GuestCreate{Source: dbStorage, Random: random}},
-		{Path: "/event/edit/(.*)", Handler: &handler.GuestEdit{Source: dbStorage}},
-		{Path: "/event/delete/(.*)", Handler: &handler.GuestDelete{Source: dbStorage}},
+		{Path: "/event/edit", Handler: &handler.EventEdit{Source: dbStorage}},
+		{Path: "/event/delete", Handler: &handler.EventDelete{Source: dbStorage}},
 		{Path: "/static/", Handler: http.FileServer(http.Dir("./"))},
 	}.Prepare()
 }

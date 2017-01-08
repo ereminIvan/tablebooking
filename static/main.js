@@ -1,26 +1,86 @@
+var Main = {
+    _init: function() {
+        Event._init();
+        Guest._init();
+
+        //init datetimepicker
+        $(".datetimepicker-input").datetimepicker({
+            format: "dd M yy hh:mm Z",
+            locale: "ru"
+        });
+    }
+};
+
 var Event = {
-    Delete : function(id) {
-        console.log(id);
+    _init: function() {
+        console.info("Init Events");
+        $('form').submit(function (e) {
+            e.preventDefault();
+        });
     },
+    /**
+     * @return {boolean}
+     */
+    HandleDelete : function($el) {
+        var b = {"event_title": $el.data("title")};
+        $.ajax({
+            data : JSON.stringify(b),
+            contentType : 'application/json',
+            type: "POST",
+            url: "/event/delete",
+            success: function(m,s,r) {
+                Alert.Do(m,s,r);
+                $el.closest("tr").remove();
+            },
+            error: Alert.Do
+        });
+        return false;
+    },
+    /**
+     * @return {boolean}
+     */
     Edit : function(id) {
-        console.log(id);
+        var d = {"event_title": id};
+        $.ajax({
+            data : JSON.stringify(d),
+            contentType : 'application/json',
+            type: "POST",
+            url: "/event/edit"
+        });
+        return false;
+    },
+    handleCreateInited : false,
+    HandleCreateInit : function() {
+        if (Event.handleCreateInited) {
+            return false;
+        }
+        $("#dialog").find(".btn-reset").bind({
+            click: function (e) {
+                $('form').trigger('reset');
+            }
+        });
+        $("#dialog").find(".btn-list").bind({
+            click: function(e) {
+                window.location.replace("/event/list");
+            }
+        });
+        Event.handleCreateInited = true;
     },
     /**
      * @return {boolean}
      */
     HandleCreate: function(form) {
-        //Collect form data in json
-        var f = form.serializeArray();
-        var d = {};
-        for (var i = 0; i < f.length; i++) {
-            d[f[i].name] = f[i].value;
-        }
+        Event.HandleCreateInit();
+        //Collect JSON for request
+        var d = Utils.FormToJSON(form);
         //Do request
         $.ajax({
-            data : JSON.stringify(d),
+            data        : JSON.stringify(d),
             contentType : 'application/json',
-            type: "POST",
-            url: "/event/create"
+            type        : "POST",
+            url         : "/event/create",
+            success     : Dialog.Do,
+            error       : Alert.Do
         });
         return false;
     }
@@ -28,7 +88,7 @@ var Event = {
 
 var Guest = {
     _init: function() {
-        console.log("Init Guest");
+        console.info("Init Events");
         $('form').submit(function (evt) {
             evt.preventDefault();
         });
@@ -66,10 +126,10 @@ var Guest = {
         }
         //Do request
         $.ajax({
-            data : JSON.stringify(d),
+            data        : JSON.stringify(d),
             contentType : 'application/json',
-            type: "POST",
-            url: "/guest/create"
+            type        : "POST",
+            url         : "/guest/create"
         });
         return false;
     },
@@ -78,15 +138,83 @@ var Guest = {
      */
     HandleDelete : function (guestCode, eventTitle) {
         var d = {
-            "guest_code" : guestCode,
+            "guest_code"  : guestCode,
             "event_title" : eventTitle
         };
         $.ajax({
-            data : JSON.stringify(d),
+            data        : JSON.stringify(d),
             contentType : 'application/json',
-            type: "POST",
-            url: "/guest/delete"
-        })
+            type        : "POST",
+            url         : "/guest/delete"
+        });
         return false;
+    }
+};
+
+var Alert = {
+    responseMsg: "Message",
+    responseErr: "Error",
+
+    self : this,
+    BuildEmptyResponseJSON : function() {
+        var d = {};
+        d[this.responseMsg] = "";
+        d[this.responseErr] = "";
+        return d
+    },
+    Do: function (a, s, r) {
+        if (typeof a === "object") {
+            r = a
+        }
+        if (r.responseText == "") {
+            var d = Alert.BuildEmptyResponseJSON();
+            if (r.status == 200) {
+                d[Alert.responseMsg] = "Good"
+            } else {
+                d[Alert.responseErr] = "Bad"
+            }
+        } else {
+            d = JSON.parse(r.responseText);
+        }
+        console.log(d);
+        var c = $(".container");
+        var el  = d[Alert.responseErr] != ""
+            ? Alert.ErrorEl(d[Alert.responseErr]) : Alert.SuccessEl(d[Alert.responseMsg]);
+        c.find(".alert").remove();
+        c.prepend(el);
+    },
+    SuccessEl: function (msg) {
+        return $('<div class="alert alert-success fade in alert-dismissable" style="margin-top:18px;">' +
+            '<a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + msg + '</div>');
+    },
+    ErrorEl: function (msg) {
+        return $('<div class="alert alert-danger fade in alert-dismissable" style="margin-top:18px;">' +
+            '<a href="#" class="close" data-dismiss="alert" aria-label="close" title="close">×</a>' + msg + '</div>');
+    }
+};
+
+var Dialog = {
+    Do: function (a, s, r) {
+        $("#dialog").modal();
+    }
+};
+
+var Utils = {
+    FormToJSON: function(form) {
+        //Collect form data in to json format
+        var f = form.serializeArray();
+        var d = {};
+        for (var i = 0; i < f.length; i++) {
+            d[f[i].name] = f[i].value;
+        }
+        return d
+    },
+    InvokeErrorsFromArray: function(errors) {
+        //If error occurred, show them all and stop process
+        var c = $(".container");
+        for (var j = 0;  j < errors.length; j++) {
+            console.log(errors[j]);
+            c.prepend(Alert.Error(errors[j]));
+        }
     }
 };
