@@ -2,6 +2,7 @@ package handler
 
 import (
 	"encoding/json"
+	"html/template"
 	"log"
 	"net/http"
 	"net/url"
@@ -9,7 +10,6 @@ import (
 
 	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
-	"html/template"
 )
 
 type EventEdit struct {

@@ -6,11 +6,11 @@ import (
 	"fmt"
 	"html/template"
 	"net/http"
+	"strings"
 	"time"
 
 	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
-	"github.com/golang/go/src/pkg/strings"
 )
 
 type EventCreate struct {
@@ -22,9 +22,8 @@ type EventCreateRequest struct {
 	StartDate string `json:"event_date_start"`
 }
 
-type Responce struct {
-	Error   string
-	Message string
+type EventCreateResponse struct {
+	Id string `json:"id"`
 }
 
 func (h *EventCreate) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -64,7 +63,7 @@ func (h *EventCreate) post(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	rsp := Responce{Message: id}
+	rsp := dto.Response{Data: EventCreateResponse{Id: id}}
 	rd, _ := json.Marshal(rsp)
 	w.Write(rd)
 }

@@ -2,19 +2,19 @@
 <div class="row">
     <div class="col-md-12">
         <div class="panel panel-info">
-            <div class="panel-heading">Изменение мероприятия</div>
+            <div class="panel-heading">Основная информация</div>
             <div class="panel-body">
                 <form onsubmit="return Event.HandleEdit($(this))">
                     <input type="hidden" value="{{ .EventId }}" name="event_id">
                     <div class="form-group">
-                        <label for="event_title">Название мероприятия</label>
+                        <label for="event_title">Название</label>
                         <input name="event_title" type="text" class="form-control" id="event_title"
                                value="{{ .Event.Title }}"
                                aria-describedby="event_title_help" placeholder="Введите название мероприятия">
                         <small id="event_title_help" class="form-text text-muted"></small>
                     </div>
                     <div class="form-group">
-                        <label for="event_date_start">Дата начала мероприятия</label>
+                        <label for="event_date_start">Дата начала</label>
                         <div class="input-group date datetimepicker-input">
                             <input name="event_date_start" type="text" class="form-control" id="event_date_start"
                                    value='{{ .Event.StartDate.Format "02 Jan 06 15:04 MST" }}'
@@ -25,14 +25,15 @@
                         </div>
                         <small id="event_date_start_help" class="form-text text-muted"></small>
                     </div>
-                    <button type="submit" class="btn btn-primary">Продолжить</button>
+                    <button type="submit" class="btn btn-primary pull-right">
+                        <span class="glyphicon glyphicon-repeat" aria-hidden="true"></span>&nbsp;Сохранить изменения
+                    </button>
                 </form>
             </div>
         </div>
         <div class="panel panel-info">
-            <div class="panel-heading">Столы</div>
+            <div class="panel-heading"><span class="glyphicon glyphicon-list" aria-hidden="true"></span>&nbsp;Столы</div>
             <div class="panel-body">
-                <div><a href="/event/create" class="btn btn-success pull-right">Добавить</a></div>
                 <table class="table">
                     <thead>
                     <tr>
@@ -43,41 +44,53 @@
                     </tr>
                     </thead>
                     <tbody>
-                    {{ range $id, $table := .Event.Tables }}
+                    {{ range $idx, $table := .Event.Tables }}
                     <tr>
-                        <td>{{ $id }}</td>
+                        <td>{{ $idx }}</td>
                         <td>{{ $table.Capacity }}</td>
                         <td>{{ $table.IsVip }}</td>
                         <td>
-                            <a type="button" class="btn btn-info btn-sm" href="/event/edit/{{ $id }}/table/">Изменить</a>
-                            <a type="button" class="btn btn-danger btn-sm" data-title="{{ $id }}"
+                            <a type="button" class="btn btn-info btn-sm" onclick="return Event.EditTable($(this))">Изменить</a>
+                            <a type="button" class="btn btn-danger btn-sm" data-idx="{{ $idx }}"
                                onclick="return Event.HandleDeleteTable($(this))">Удалить</a>
                         </td>
                     </tr>
                     {{end}}
                     </tbody>
                 </table>
+                <button type="button" class="btn btn-success pull-right" onclick="return Event.EditTable($(this))">
+                    <span class="glyphicon glyphicon-plus" aria-hidden="true"> </span> Добавить</button>
             </div>
         </div>
     </div>
 </div>
-<div class="modal fade" tabindex="-1" role="dialog" id="dialog">
+<div class="modal fade" tabindex="-1" role="dialog" id="dialog_table">
     <div class="modal-dialog" role="document">
         <div class="modal-content">
             <div class="modal-header">
                 <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
-                <h4 class="modal-title">Сохранение мероприятия</h4>
+                <h4 class="modal-title">Добавление стола</h4>
             </div>
             <div class="modal-body">
-                <p>Событие было сохранено</p>
+                <form onsubmit="return Event.HandleAddTable($(this))">
+                    <div class="form-group">
+                        <label for="table_capacity">Количество мест за столом</label>
+                        <input name="table_capacity" type="text" class="form-control" id="table_capacity" value=""
+                               aria-describedby="table_capacity_help" placeholder="Введите количество мест за столом">
+                        <small id="table_capacity_help" class="form-text text-muted"></small>
+                    </div>
+                    <div class="form-group">
+                        <div class="checkbox">
+                            <label><input type="checkbox" name="table_is_vip">Вип стол</label>
+                        </div>
+                    </div>
+                </form>
             </div>
             <div class="modal-footer">
-                <a type="button" class="btn btn-success btn-edit"
-                        data-dismiss="modal" href="/event/edit/">Продолжить редактирование</a>
-                <a type="button" class="btn btn-success btn-list"
-                        data-dismiss="modal" href="/event/list">Список мероприятий</a>
-                <button type="button" class="btn btn-success btn-reset"
-                        data-dismiss="modal">Создать еще одно</button>
+                <button type="button" class="btn btn-success btn-add"
+                        data-dismiss="modal">Добавить</button>
+                <button type="button" class="btn btn-danger btn-cancel"
+                        data-dismiss="modal">Отменить</button>
             </div>
         </div><!-- /.modal-content -->
     </div><!-- /.modal-dialog -->

@@ -49,7 +49,21 @@ var Event = {
         return false;
     },
     HandleEdit: function(form) {
-        
+        console.log("HandleEdit");
+        return false;
+    },
+    EditTable: function(el) {
+        console.log("EditTable");
+        $("#dialog_table").modal();
+        return false;
+    },
+    HandleAddTable: function(form) {
+        console.log("HandleAddTable");
+        return false;
+    },
+    HandleDeleteTable: function(idx) {
+        console.log("HandleDeleteTable");
+        return false;
     },
     handleCreateInited : false,
     HandleCreateInit : function() {

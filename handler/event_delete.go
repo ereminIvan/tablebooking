@@ -3,11 +3,11 @@ package handler
 import (
 	"encoding/json"
 	"fmt"
+	"log"
 	"net/http"
 
 	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
-	"log"
 )
 
 type EventDelete struct {
@@ -35,7 +35,7 @@ func (h *EventDelete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 
 	w.WriteHeader(http.StatusOK)
-	rsp := Responce{Message: "Event successfully deleted"}
+	rsp := dto.Response{Data: "Event successfully deleted"}
 	rb, _ := json.Marshal(rsp)
 	w.Write(rb)
 	return

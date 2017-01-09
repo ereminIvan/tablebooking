@@ -18,17 +18,19 @@ var appConfig *dto.Config
 var routeList map[handler.IHandler]*regexp.Regexp
 
 func init() {
+	//Read config
 	appConfig = &dto.Config{}
 	if err := appConfig.Read("config.json"); err != nil {
 		panic(err)
 	}
+	//Init Services
 	random = service.NewRand()
-
 	dbStorage = service.NewStorage(
 		fb.NewDBClient(appConfig.FbDBPath, appConfig.FbDBSecret, false, nil),
 		random,
 	)
 
+	//Init Routes
 	routeList = handler.RouteList{
 		{Path: "/guest/code", Handler: &handler.GuestCode{Source: dbStorage}},
 		{Path: "/event/create", Handler: &handler.EventCreate{Source: dbStorage}},

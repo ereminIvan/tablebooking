@@ -3,6 +3,7 @@ package handler
 import (
 	"encoding/json"
 	"errors"
+	"github.com/ereminIvan/tablebooking/dto"
 	"net/http"
 )
 
@@ -17,9 +18,17 @@ var (
 )
 
 // write json responce with error and status code
-func invokeResponceErrorWithStatus(w http.ResponseWriter, err error, status int) {
-	w.WriteHeader(status)
-	rsp := Responce{Error: err.Error()}
+func invokeResponceErrorWithStatus(w http.ResponseWriter, err error, code int) {
+	w.WriteHeader(code)
+	rsp := dto.Response{
+		Errors: []dto.Error{
+			{
+				Title:  err.Error(),
+				Detail: err.Error(),
+				Code:   string(code),
+			},
+		},
+	}
 	d, _ := json.Marshal(rsp)
 	w.Write(d)
 }
