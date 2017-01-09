@@ -2,9 +2,11 @@ package handler
 
 import (
 	"encoding/json"
+	"errors"
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
@@ -15,7 +17,7 @@ type EventDelete struct {
 }
 
 type EventDeleteRequest struct {
-	EventTitle string `json:"event_title"`
+	Id string `json:"id"`
 }
 
 func (h *EventDelete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
@@ -28,15 +30,29 @@ func (h *EventDelete) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	}
 	defer r.Body.Close()
 
-	if err := h.Source.DeleteEvent(dto.Event{Title: b.EventTitle}); err != nil {
+	b.Id = strings.Trim(b.Id, " ")
+	if err := b.Validate(); err != nil {
+		invokeResponceErrorWithStatus(w, err, http.StatusBadRequest)
+		return
+	}
+	if err := h.Source.DeleteEvent(b.Id); err != nil {
 		log.Printf("Firebase error: %s", err)
 		invokeResponceErrorWithStatus(w, err, http.StatusBadRequest)
 		return
 	}
 
 	w.WriteHeader(http.StatusOK)
-	rsp := dto.Response{Data: "Event successfully deleted"}
+	rsp := dto.Response{Data: struct {
+		Message string `json:"message"`
+	}{Message: "Event successfully deleted"}}
 	rb, _ := json.Marshal(rsp)
 	w.Write(rb)
 	return
+}
+
+func (r *EventDeleteRequest) Validate() error {
+	if r.Id == "" {
+		return errors.New("Invalid event Id")
+	}
+	return nil
 }

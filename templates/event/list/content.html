@@ -22,7 +22,7 @@
                         <td>{{ $event.StartDate.Format "2006 Jan 02" }}</td>
                         <td>
                             <a type="button" class="btn btn-info btn-sm" href="/event/edit/{{ $id }}">Изменить</a>
-                            <a type="button" class="btn btn-danger btn-sm" data-title="{{ $id }}"
+                            <a type="button" class="btn btn-danger btn-sm" data-id="{{ $id }}"
                                onclick="return Event.HandleDelete($(this))">Удалить</a>
                         </td>
                     </tr>

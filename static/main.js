@@ -13,7 +13,7 @@ var Main = {
 
 var Event = {
     _init: function() {
-        $('form').submit(function (e) {
+        $("form").submit(function (e) {
             e.preventDefault();
         });
     },
@@ -21,17 +21,17 @@ var Event = {
      * @return {boolean}
      */
     HandleDelete : function($el) {
-        var b = {"event_title": $el.data("title")};
+        var b = {"id": $el.data("id")};
         $.ajax({
             data : JSON.stringify(b),
             contentType : 'application/json',
             type: "POST",
             url: "/event/delete",
             success: function(m,s,r) {
-                Alert.Do(m,s,r);
+                Alert.DoSuccess(m,s,r);
                 $el.closest("tr").remove();
             },
-            error: Alert.Do
+            error: Alert.DoError
         });
         return false;
     },
@@ -49,38 +49,21 @@ var Event = {
         return false;
     },
     HandleEdit: function(form) {
-        console.log("HandleEdit");
+        console.info("HandleEdit");
         return false;
     },
     EditTable: function(el) {
-        console.log("EditTable");
+        console.info("EditTable");
         $("#dialog_table").modal();
         return false;
     },
     HandleAddTable: function(form) {
-        console.log("HandleAddTable");
+        console.info("HandleAddTable");
         return false;
     },
     HandleDeleteTable: function(idx) {
-        console.log("HandleDeleteTable");
+        console.info("HandleDeleteTable");
         return false;
-    },
-    handleCreateInited : false,
-    HandleCreateInit : function() {
-        if (Event.handleCreateInited) {
-            return false;
-        }
-        $("#dialog").find(".btn-reset").bind({
-            click: function (e) {
-                $('form').trigger('reset');
-            }
-        });
-        $("#dialog").find(".btn-list").bind({
-            click: function(e) {
-                window.location.replace("/event/list");
-            }
-        });
-        Event.handleCreateInited = true;
     },
     /**
      * @return {boolean}
@@ -95,13 +78,35 @@ var Event = {
             contentType : 'application/json',
             type        : "POST",
             url         : "/event/create",
-            success     : function (s,m,r) {
+            success     : function (s, m, r) {
                 Dialog.Do(s,m,r, function($dg, data) {
-                    $dg.find(".btn-edit").attr("href", "/event/edit/" + data)
+                    $dg.find(".btn-edit").attr("href", "/event/edit/" + data);
                 });
             },
-            error       : Alert.Do
+            error       : Alert.DoError
         });
+        return false;
+    },
+    handleCreateInited : false,
+    /**
+     * @return {boolean}
+     */
+    HandleCreateInit : function() {
+        if (Event.handleCreateInited) {
+            return false;
+        }
+        var dg = $("#dialog");
+        dg.find(".btn-reset").bind({
+            click: function (e) {
+                $('form').trigger('reset');
+            }
+        });
+        dg.find(".btn-list").bind({
+            click: function(e) {
+                window.location.replace("/event/list");
+            }
+        });
+        Event.handleCreateInited = true;
         return false;
     }
 };
@@ -112,21 +117,17 @@ var Guest = {
             evt.preventDefault();
         });
     },
-    Code : function(code) {
-        console.log(code)
-    },
     /**
      * Check given registration code
      * @return {boolean}
      */
     HandleCode : function(form) {
         $.post("/guest/code", {
-            "guest_code": form.val("guest_code")
+            "guest_code" : form.val("guest_code")
         }, function(data, status) {
             console.log(data,status);
         });
         return false;
-
     },
     /**
      * Create guest with given params
@@ -171,36 +172,29 @@ var Guest = {
 };
 
 var Alert = {
-    responseMsg: "Message",
-    responseErr: "Error",
-
-    self : this,
-    BuildEmptyResponseJSON : function() {
-        var d = {};
-        d[this.responseMsg] = "";
-        d[this.responseErr] = "";
-        return d
-    },
-    Do: function (a, s, r) {
-        if (typeof a === "object") {
-            r = a
-        }
-        if (r.responseText == "") {
-            var d = Alert.BuildEmptyResponseJSON();
-            if (r.status == 200) {
-                d[Alert.responseMsg] = "Good"
-            } else {
-                d[Alert.responseErr] = "Bad"
-            }
-        } else {
-            d = JSON.parse(r.responseText);
-        }
-        console.log(d);
+    DoError: function (a, s, r) {
+        var data = typeof a == "object" ? a : r;
+        var d = JSON.parse(data.responseText);
         var c = $(".container");
-        var el  = d[Alert.responseErr] != ""
-            ? Alert.ErrorEl(d[Alert.responseErr]) : Alert.SuccessEl(d[Alert.responseMsg]);
+        var el;
         c.find(".alert").remove();
-        c.prepend(el);
+        if (typeof  d["errors"] != "undefined") {
+            for (var i = 0; i < d["errors"].length; i++) {
+                el = Alert.ErrorEl(d["errors"][i]["title"]);
+                c.prepend(el);
+            }
+        }
+    },
+    DoSuccess: function(a, s, r) {
+        var data = typeof a == "object" ? a : r;
+        var d = JSON.parse(data.responseText);
+        var c = $(".container");
+        var el;
+        c.find(".alert").remove();
+        if (typeof d["data"] != "undefined" && typeof d["data"]["message"] != "undefined") {
+            el = Alert.SuccessEl(d["data"]["message"]);
+            c.prepend(el);
+        }
     },
     SuccessEl: function (msg) {
         return $('<div class="alert alert-success fade in alert-dismissable" style="margin-top:18px;">' +
@@ -217,7 +211,7 @@ var Dialog = {
         var d = JSON.parse(r.responseText);
         var dg = $("#dialog");
         if (typeof fn == "function") {
-            fn(dg, d["Message"]);
+            fn(dg, d["data"]["id"]);
         }
         dg.modal();
     }

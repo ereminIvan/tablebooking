@@ -1,8 +1,6 @@
 package service
 
-import (
-	"github.com/ereminIvan/tablebooking/dto"
-)
+import "github.com/ereminIvan/tablebooking/dto"
 
 // IStorage interface for getting access to storage
 type IStorage interface {
@@ -19,7 +17,7 @@ type ISource interface {
 	GetEvent(id string) (dto.Event, error)
 	CreateEvent(dto.Event) (error, string)
 	UpdateEvent(dto.Event) error
-	DeleteEvent(dto.Event) error
+	DeleteEvent(id string) error
 	DeleteEvents() error
 	GetEvents() (dto.Events, error)
 	//Guests
@@ -62,8 +60,8 @@ func (s *storageClient) UpdateEvent(e dto.Event) error {
 }
 
 // DeleteEvent Delete specified event
-func (s *storageClient) DeleteEvent(e dto.Event) error {
-	return s.storage.Delete("events/" + e.Title)
+func (s *storageClient) DeleteEvent(id string) error {
+	return s.storage.Delete("events/" + id)
 }
 
 // DeleteEvents Delete all events
