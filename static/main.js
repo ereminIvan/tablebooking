@@ -58,7 +58,20 @@ var Event = {
         return false;
     },
     HandleAddTable: function(form) {
-        console.info("HandleAddTable");
+        var d = Utils.FormToJSON(form);
+        //Do request
+        $.ajax({
+            data        : JSON.stringify(d),
+            contentType : 'application/json',
+            type        : "POST",
+            url         : "/event/" + eventId + "/table",
+            success     : function (s, m, r) {
+                Dialog.Do(s,m,r, function($dg, data) {
+                    $dg.find(".btn-edit").attr("href", "/event/edit/" + data);
+                });
+            },
+            error       : Alert.DoError
+        });
         return false;
     },
     HandleDeleteTable: function(idx) {

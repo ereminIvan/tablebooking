@@ -20,6 +20,8 @@ type ISource interface {
 	DeleteEvent(id string) error
 	DeleteEvents() error
 	GetEvents() (dto.Events, error)
+	//Events Tables
+	CreateEventTables(eventId string, tables dto.Tables) error
 	//Guests
 	CreateGuest(dto.Guest, dto.Event) error
 	UpdateGuest(dto.Guest, dto.Event) error
@@ -52,6 +54,10 @@ func (s *storageClient) GetEvent(id string) (dto.Event, error) {
 func (s *storageClient) CreateEvent(e dto.Event) (error, string) {
 	id := s.randService.Runes(15)
 	return s.storage.Write("events/"+id, e), id
+}
+
+func (s *storageClient) CreateEventTables(eventId string, tables dto.Tables) error {
+	return s.storage.Write("events/"+eventId+"/tables", tables)
 }
 
 // UpdateEvent Update given event

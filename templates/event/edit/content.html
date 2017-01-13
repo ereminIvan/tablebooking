@@ -72,7 +72,8 @@
                 <h4 class="modal-title">Добавление стола</h4>
             </div>
             <div class="modal-body">
-                <form onsubmit="return Event.HandleAddTable($(this))">
+                <form id="add-table-form">
+                    <input type="hidden" value="{{ .EventId }}" name="event_id">
                     <div class="form-group">
                         <label for="table_capacity">Количество мест за столом</label>
                         <input name="table_capacity" type="text" class="form-control" id="table_capacity" value=""
@@ -88,7 +89,7 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-success btn-add"
-                        data-dismiss="modal">Добавить</button>
+                        data-dismiss="modal" onclick="return Event.HandleAddTable($('#add-table-form'))">Добавить</button>
                 <button type="button" class="btn btn-danger btn-cancel"
                         data-dismiss="modal">Отменить</button>
             </div>
