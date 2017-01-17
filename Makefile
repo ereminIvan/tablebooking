@@ -13,6 +13,7 @@ GLIDE_VERSION:=v0.12.3
 GLIDE_BIN:=$(GLIDE_PATH)/glide-$(GLIDE_VERSION)
 VENDOR_DIR=vendor
 GLIDE_CHANGE=vendor/glide_change
+STATIC_DIR=static
 
 DATE:=$(shell date -u "+%Y-%m-%d %H:%M:%S")
 GOVER:=$(shell go version | cut -f3 -d " " | sed 's/go//')
@@ -68,6 +69,10 @@ build:
 	@${GO} build -ldflags "$(LDFLAGS)" -o $(BINDIR) main.go
 
 .PHONY: run
-run: $(GLIDE_CHANGE)
+run:
 	$(info Run...)
-	@${GO} run -ldflags "$(LDFLAGSLDFLAGS)" main.go -config_dir=./bob_api/etc -env=dev
+	@${GO} run -ldflags "$(LDFLAGSLDFLAGS)" main.go
+
+.PHONY: build-static
+build-static:
+	cd $(STATIC_DIR) && npm run build

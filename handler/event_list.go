@@ -1,10 +1,9 @@
 package handler
 
 import (
-	"html/template"
+	"encoding/json"
 	"net/http"
 
-	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
 )
 
@@ -17,13 +16,12 @@ func (h *EventList) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		panic(err)
 	}
-	data := struct {
-		Events dto.Events
-	}{
-		Events: events,
+	b, err := json.Marshal(events)
+	if err != nil {
+		panic(err)
 	}
-	tpl := template.Must(template.ParseFiles("./templates/basic.html", "./templates/event/list/content.html"))
-	if err := tpl.ExecuteTemplate(w, "basic.html", data); err != nil {
+	_, err = w.Write(b)
+	if err != nil {
 		panic(err)
 	}
 }

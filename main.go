@@ -36,10 +36,11 @@ func init() {
 		{Path: "/guest/create", Handler: &handler.GuestCreate{Source: dbStorage, Random: random}},
 		{Path: "/event/create", Handler: &handler.EventCreate{Source: dbStorage}},
 		{Path: "/event/edit/", Handler: &handler.EventEdit{Source: dbStorage}},
-		{Path: "/event/delete", Handler: &handler.EventDelete{Source: dbStorage}},
+		{Path: "/event/delete/", Handler: &handler.EventDelete{Source: dbStorage}},
 		{Path: "/event/list", Handler: &handler.EventList{Source: dbStorage}},
 		{Path: "/event/(.*)/table", Handler: &handler.EventTableCreate{Source: dbStorage}},
-		{Path: "/static/", Handler: http.FileServer(http.Dir("./"))},
+
+		{Path: "/", Handler: http.FileServer(http.Dir("./static/build"))},
 	}.Prepare()
 }
 

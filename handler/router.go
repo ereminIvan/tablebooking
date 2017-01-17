@@ -38,6 +38,7 @@ func (h *Router) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	for h, rx := range h.RouteList {
 		if rx.MatchString(path) {
 			log.Printf("Serve route path: %s", path)
+			w.Header().Add("Access-Control-Allow-Origin", "*")
 			h.ServeHTTP(w, r)
 			return
 		}

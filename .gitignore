@@ -3,3 +3,6 @@ vendor/
 glide.lock
 *.iml
 config.json
+*.log
+static/node_modules/
+static/build/

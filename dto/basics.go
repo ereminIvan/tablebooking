@@ -2,7 +2,7 @@ package dto
 
 import "time"
 
-// Guest dto model
+// Guest DTO model
 type Guest struct {
 	FirstName string `json:"first_name"`
 	LastName  string `json:"last_name"`
@@ -10,25 +10,25 @@ type Guest struct {
 	Code      string `json:"code"`
 }
 
-// Guests list dto model
+// Guests list DTO model
 type Guests map[string]Guest
 
-// Table dto model
+// Table DTO model
 type Table struct {
 	Guests   Guests `json:"guests"`
 	IsVIP    bool   `json:"is_vip"`
 	Capacity int64  `json:"capacity"`
 }
 
-// Tables list dto model
+// Tables list DTO model
 type Tables map[int]Table
 
-// Event dto model
+// Event DTO model
 type Event struct {
 	Title     string    `json:"title"`
 	StartDate time.Time `json:"start_date"`
 	Tables    Tables    `json:"tables"`
 }
 
-// Events list dto model
+// Events list DTO model
 type Events map[string]Event
