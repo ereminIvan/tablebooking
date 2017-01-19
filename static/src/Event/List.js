@@ -1,7 +1,6 @@
 import React from "react";
 import PanelWrapper from "../Basic/PanelWrapper";
-import ButtonA from "../Basic/ButtonA";
-import Button from "../Basic/Button";
+import {Button, ButtonA} from "../Basic/Button";
 import $ from "jquery";
 
 var EventRows = React.createClass({

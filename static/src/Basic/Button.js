@@ -15,4 +15,10 @@ var Button = React.createClass({
     }
 });
 
-export default Button;
+var ButtonA  = React.createClass({
+    render : function() {
+        return <a {...this.props} {...this.attr}>{this.props.children}</a>
+    }
+});
+
+export {Button, ButtonA};

@@ -16,4 +16,28 @@ var Message = React.createClass({
     }
 });
 
-export default Message;
+var MessageError = React.createClass({
+    defaultProps : {
+        messageType: 'error'
+    },
+    propTypes : {
+        messageType: React.PropTypes.string
+    },
+    render : function() {
+        return <Message messageType={this.props.messageType}>{this.props.children}</Message>
+    }
+});
+
+var MessageSuccess = React.createClass({
+    defaultProps : {
+        messageType: 'success'
+    },
+    propTypes : {
+        messageType: React.PropTypes.string
+    },
+    render : function() {
+        return <Message messageType={this.props.messageType}>{this.props.children}</Message>
+    }
+});
+
+export default {MessageError, MessageSuccess};

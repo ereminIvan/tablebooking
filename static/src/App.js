@@ -1,3 +1,3 @@
-import List from "./Event/List";
+import Create from "./Guest/Create";
 
-export default List;
+export default Create;
