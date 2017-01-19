@@ -3,8 +3,9 @@ package handler
 import (
 	"encoding/json"
 	"errors"
-	"github.com/ereminIvan/tablebooking/dto"
 	"net/http"
+
+	"github.com/ereminIvan/tablebooking/dto"
 )
 
 var (
@@ -25,7 +26,7 @@ func invokeResponceErrorWithStatus(w http.ResponseWriter, err error, code int) {
 			{
 				Title:  err.Error(),
 				Detail: err.Error(),
-				Code:   string(code),
+				Code:   code,
 			},
 		},
 	}

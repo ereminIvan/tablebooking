@@ -2,8 +2,10 @@ package handler
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 
+	"github.com/ereminIvan/tablebooking/dto"
 	"github.com/ereminIvan/tablebooking/service"
 )
 
@@ -12,16 +14,21 @@ type EventList struct {
 }
 
 func (h *EventList) ServeHTTP(w http.ResponseWriter, r *http.Request) {
+	var errs []dto.Error
 	events, err := h.Source.GetEvents()
 	if err != nil {
-		panic(err)
+		e := dto.ErrorInternalServer
+		e.Code = dto.ErrorFBErrorCode
+		errs = append(errs, e)
+
+		log.Printf("During getting `events` from source error ocured: %s", err)
 	}
-	b, err := json.Marshal(events)
-	if err != nil {
-		panic(err)
+	response := dto.Response{
+		Errors: errs,
+		Data:   events,
 	}
-	_, err = w.Write(b)
-	if err != nil {
+	b, _ := json.Marshal(response)
+	if _, err = w.Write(b); err != nil {
 		panic(err)
 	}
 }

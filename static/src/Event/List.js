@@ -1,5 +1,7 @@
 import React from "react";
-import PanelWrapper from "../Basic.js";
+import PanelWrapper from "../Basic/PanelWrapper";
+import ButtonA from "../Basic/ButtonA";
+import Button from "../Basic/Button";
 import $ from "jquery";
 
 var EventRows = React.createClass({
@@ -10,8 +12,10 @@ var EventRows = React.createClass({
     },
     componentDidMount: function() {
         this.serverRequest = $.get(this.props.source, function (result) {
+            var d = JSON.parse(result);
+            console.log(d);
             this.setState({
-                data: JSON.parse(result)
+                data: d.data
             });
         }.bind(this));
     },
@@ -36,10 +40,8 @@ var EventRows = React.createClass({
                 <td>{self.state.data[k].start_date}</td>
                 <td>{self.state.data[k].tables}</td>
                 <td>
-                    <a type="button" className="btn btn-info btn-sm"
-                       onClick={self.actionEditEvent.bind(null, k)}>Изменить</a>
-                    <a type="button" className="btn btn-danger btn-sm"
-                       onClick={self.actionDeleteEvent.bind(null, k)}>Удалить</a>
+                    <Button className="btn btn-info btn-sm" glyph="edit" onClick={self.actionEditEvent.bind(null, k)} />&nbsp;
+                    <Button className="btn btn-danger btn-sm" glyph="remove" onClick={self.actionDeleteEvent.bind(null, k)} />
                 </td>
             </tr>
         });
@@ -50,11 +52,9 @@ var EventRows = React.createClass({
 var EventsTable = React.createClass({
     
     render : function () {
-        const title = "Список событий";
-        const header = "Список событий";
-        const content = <div>
-             <div><a href="/event/create" className="btn btn-success">Создать</a></div>
-             <table className="table">
+        return <PanelWrapper panelHeadContent="Список событий" headerCaption="Список событий">
+            <ButtonA className="btn btn-success" href="/event/create">Создать</ButtonA>
+            <table className="table">
                 <thead>
                 <tr>
                     <th>#</th>
@@ -66,10 +66,7 @@ var EventsTable = React.createClass({
                 </thead>
                 <EventRows source="http://localhost:8080/event/list" />
             </table>
-        </div>;
-        return <PanelWrapper panelBodyContent={content}
-                             panelHeadContent={title}
-                             headerCaption={header}/>
+        </PanelWrapper>;
     }
 });
 

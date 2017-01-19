@@ -1,3 +1,3 @@
-import Code from "./Guest/Code";
+import List from "./Event/List";
 
-export default Code;
+export default List;

@@ -6,7 +6,7 @@ import (
 	"regexp"
 
 	"github.com/ereminIvan/tablebooking/dto"
-	"github.com/ereminIvan/tablebooking/handler"
+	h "github.com/ereminIvan/tablebooking/handler"
 	"github.com/ereminIvan/tablebooking/service"
 
 	fb "github.com/ereminIvan/firebase"
@@ -15,14 +15,17 @@ import (
 var dbStorage service.ISource
 var random service.IRandom
 var appConfig *dto.Config
-var routeList map[handler.IHandler]*regexp.Regexp
+var routes map[h.IHandler]*regexp.Regexp
+
+const configFilePath = "config.json"
 
 func init() {
 	//Read config
 	appConfig = &dto.Config{}
-	if err := appConfig.Read("config.json"); err != nil {
+	if err := appConfig.Read(configFilePath); err != nil {
 		panic(err)
 	}
+
 	//Init Services
 	random = service.NewRand()
 	dbStorage = service.NewStorage(
@@ -31,21 +34,21 @@ func init() {
 	)
 
 	//Init Routes
-	routeList = handler.RouteList{
-		{Path: "/guest/code", Handler: &handler.GuestCode{Source: dbStorage}},
-		{Path: "/guest/create", Handler: &handler.GuestCreate{Source: dbStorage, Random: random}},
-		{Path: "/event/create", Handler: &handler.EventCreate{Source: dbStorage}},
-		{Path: "/event/edit/", Handler: &handler.EventEdit{Source: dbStorage}},
-		{Path: "/event/delete/", Handler: &handler.EventDelete{Source: dbStorage}},
-		{Path: "/event/list", Handler: &handler.EventList{Source: dbStorage}},
-		{Path: "/event/(.*)/table", Handler: &handler.EventTableCreate{Source: dbStorage}},
-
+	routes = h.RouteList{
+		{Path: "/guest/code", Handler: &h.GuestCode{Source: dbStorage}},
+		{Path: "/guest/create", Handler: &h.GuestCreate{Source: dbStorage, Random: random}},
+		{Path: "/event/create", Handler: &h.EventCreate{Source: dbStorage}},
+		{Path: "/event/edit/", Handler: &h.EventEdit{Source: dbStorage}},
+		{Path: "/event/delete/", Handler: &h.EventDelete{Source: dbStorage}},
+		{Path: "/event/list", Handler: &h.EventList{Source: dbStorage}},
+		{Path: "/event/(.*)/table", Handler: &h.EventTableCreate{Source: dbStorage}},
+		//Serve static files //todo switch from "/" to "/static/" route. need to refactor React paths
 		{Path: "/", Handler: http.FileServer(http.Dir("./static/build"))},
 	}.Prepare()
 }
 
 func main() {
-	http.Handle("/", &handler.Router{RouteList: routeList})
+	http.Handle("/", &h.Router{routes})
 
 	log.Printf("Listen and serve with config: %#v", *appConfig)
 
