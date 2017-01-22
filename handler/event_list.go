@@ -23,9 +23,21 @@ func (h *EventList) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 
 		log.Printf("During getting `events` from source error ocured: %s", err)
 	}
+
+	data := make([]struct {
+		Id string `json:"id"`
+		dto.Event
+	}, 0, len(events))
+	for idx, e := range events {
+		data = append(data, struct {
+			Id string `json:"id"`
+			dto.Event
+		}{idx, e})
+	}
+
 	response := dto.Response{
 		Errors: errs,
-		Data:   events,
+		Data:   data,
 	}
 	b, _ := json.Marshal(response)
 	if _, err = w.Write(b); err != nil {

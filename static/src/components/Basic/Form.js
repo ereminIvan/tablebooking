@@ -27,7 +27,8 @@ var InputText = React.createClass({
     },
     render: function() {
         var label = this.props.label ? <label htmlFor={this.props.name}>{this.props.label}</label> : null;
-        var hint = this.props.hint ? <small id={this.props.name + '_help'} className="form-text text-muted">{this.props.hint}</small> : null;
+        var hint = this.props.hint
+            ? <small id={this.props.name + '_help'} className="form-text text-muted">{this.props.hint}</small> : null;
         return <div>
             {label}
             <input name={this.props.name} type="text"
@@ -41,10 +42,4 @@ var InputText = React.createClass({
     }
 });
 
-var SelectGroup = React.createClass({
-    render: function(){
-        return null;
-    }
-});
-
-export {Form, Group, InputText, SelectGroup}
+export {Form, Group, InputText}

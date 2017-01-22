@@ -1,6 +1,6 @@
 import React from "react";
 import PanelWrapper from "../Basic/PanelWrapper";
-import {Container} from "../Basic/Container";
+import {Row} from "../Basic/Container";
 import {Header3} from "../Basic/Header";
 import {Button, ButtonA} from "../Basic/Button";
 import $ from "jquery";
@@ -53,7 +53,7 @@ var EventRows = React.createClass({
 var EventsTable = React.createClass({
     
     render : function () {
-        return <Container>
+        return <Row>
             <Header3>Список событий</Header3>
             <PanelWrapper header="Список событий">
                 <ButtonA className="btn btn-success" href="/event/create">Создать</ButtonA>
@@ -70,7 +70,7 @@ var EventsTable = React.createClass({
                     <EventRows source="http://localhost:8080/event/list" />
                 </table>
             </PanelWrapper>
-        </Container>;
+        </Row>;
     }
 });
 
