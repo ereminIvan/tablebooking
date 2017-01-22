@@ -1,5 +1,7 @@
 import React from "react";
 import PanelWrapper from "../Basic/PanelWrapper";
+import {Container} from "../Basic/Container";
+import {Header3} from "../Basic/Header";
 import {Button, ButtonA} from "../Basic/Button";
 import $ from "jquery";
 
@@ -51,21 +53,24 @@ var EventRows = React.createClass({
 var EventsTable = React.createClass({
     
     render : function () {
-        return <PanelWrapper panelHeadContent="Список событий" headerCaption="Список событий">
-            <ButtonA className="btn btn-success" href="/event/create">Создать</ButtonA>
-            <table className="table">
-                <thead>
-                <tr>
-                    <th>#</th>
-                    <th>Название мероприятия</th>
-                    <th>Дата начала</th>
-                    <th>Столы</th>
-                    <th>Действия</th>
-                </tr>
-                </thead>
-                <EventRows source="http://localhost:8080/event/list" />
-            </table>
-        </PanelWrapper>;
+        return <Container>
+            <Header3>Список событий</Header3>
+            <PanelWrapper header="Список событий">
+                <ButtonA className="btn btn-success" href="/event/create">Создать</ButtonA>
+                <table className="table">
+                    <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Название мероприятия</th>
+                        <th>Дата начала</th>
+                        <th>Столы</th>
+                        <th>Действия</th>
+                    </tr>
+                    </thead>
+                    <EventRows source="http://localhost:8080/event/list" />
+                </table>
+            </PanelWrapper>
+        </Container>;
     }
 });
 

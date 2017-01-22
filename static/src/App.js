@@ -1,3 +1,3 @@
-import Create from "./Guest/Create";
+import Create from "./Event/Create";
 
 export default Create;

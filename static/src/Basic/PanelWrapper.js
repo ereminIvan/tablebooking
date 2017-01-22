@@ -2,25 +2,20 @@ import React from "react";
 
 var PanelWrapper = React.createClass({
     defaultProps : {
-        headerCaption: 'Default Header Caption',
-        panelHeadContent: null
+        header: null
     },
     propTypes : {
-        headerCaption: React.PropTypes.string,
-        panelHeadContent: React.PropTypes.any
+        header: React.PropTypes.any
     },
     render : function() {
-        return <div>
-            <h3>{this.props.headerCaption}</h3>
-            <div className="row">
+        return <div className="row">
                 <div className="col-md-12">
                     <div className="panel panel-info">
-                        <PanelHead>{this.props.panelHeadContent}</PanelHead>
+                        <PanelHead>{this.props.header}</PanelHead>
                         <PanelBody>{this.props.children}</PanelBody>
                     </div>
                 </div>
-            </div>
-        </div>
+            </div>;
     }
 });
 
